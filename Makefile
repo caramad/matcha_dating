@@ -1,6 +1,6 @@
 # Variables
 DOCKER_COMPOSE = sudo docker compose -f ./src/docker-compose.yml
-SERVICE_NAME = app
+SERVICE_NAME = backend
 
 # Build and run the container
 up:
