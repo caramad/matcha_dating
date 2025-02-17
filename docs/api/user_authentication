@@ -1,0 +1,175 @@
+# API Documentation
+
+## Overview
+This document describes the available User Authentication API endpoints, their parameters, expected responses, and error handling.
+
+---
+
+## Endpoints
+
+### 1. **User Authentication**
+
+#### **Login**
+- **Endpoint:** `POST /api/auth/login`
+- **Description:** Authenticates a user and returns an access token.
+- **Request Headers:**
+  - `Content-Type: application/json`
+- **Request Body:**
+  ```json
+  {
+    "email": "string (required)",
+    "password": "string (required)",
+	"name": "string (required)",
+	"phone": "string (required)",
+	"dob": "string (required)"
+  }
+  ```
+- **Response:**
+  - **200 OK**
+    ```json
+    {
+      "token": "string",
+      "expiresIn": "integer"
+    }
+    ```
+  - **400 Bad Request**
+    ```json
+    {
+      "error": "Invalid credentials"
+    }
+    ```
+
+#### **Sign-up**
+- **Endpoint:** `POST /api/auth/signup`
+- **Description:** Registers a new user and automatically logs them in.
+- **Request Headers:**
+  - `Content-Type: application/json`
+- **Request Body:**
+  ```json
+  {
+	"email": "string (required)",
+	"password": "string (required)"
+  }
+  ```
+- **Response:**
+  - **201 Created**
+	```json
+	{
+	  "token": "string",
+	  "expiresIn": "integer"
+	}
+	```
+  - **400 Bad Request**
+	```json
+	{
+	  "error": "Email already exists"
+	}
+	```
+
+---
+
+#### **Logout**
+- **Endpoint:** `POST /api/auth/logout`
+- **Description:** Logs out the currently authenticated user.
+- **Request Headers:**
+  - `Authorization
+- **Response:**
+  - **200 OK**
+	```json
+	{
+	  "message": "Successfully logged out"
+	}
+	```
+  - **401 Unauthorized**
+	```json
+	{
+	  "error": "Unauthorized"
+	}
+	```
+
+---
+
+#### **Recover password**
+- **Endpoint:** `POST /api/auth/recover`
+- **Description:** Sends a password recovery email to the user.
+- **Request Headers:**
+  - `Content-Type: application/json`
+- **Request Body:**
+  ```json
+  {
+	"email": "string (required)"
+  }
+  ```
+- **Response:**
+  - **200 OK**
+	```json
+	{
+	  "message": "Recovery email sent"
+	}
+	```
+  - **400 Bad Request**
+	```json
+	{
+	  "error": "Email not found"
+	}
+	```
+
+---
+
+#### **Reset password**
+- **Endpoint:** `POST /api/auth/reset`
+- **Description:** Resets the user's password using a recovery code.
+- **Request Headers:**
+  - `Content-Type: application/json`
+- **Request Body:**
+  ```json
+  {
+	"email": "string (required)",
+	"code": "string (required)",
+	"password": "string (required)"
+  }
+  ```
+- **Response:**
+  - **200 OK**
+	```json
+	{
+	  "message": "Password reset successfully"
+	}
+	```
+  - **400 Bad Request**
+	```json
+	{
+	  "error": "Invalid code"
+	}
+	```
+---
+
+
+
+### 2. **Error Handling**
+The API uses standard HTTP response codes to indicate the success or failure of a request.
+
+| Status Code | Meaning |
+|------------|---------|
+| 200 OK | Request was successful |
+| 201 Created | Resource was successfully created |
+| 400 Bad Request | Request is malformed or missing required fields |
+| 401 Unauthorized | Authentication failed or missing token |
+| 403 Forbidden | User does not have permission |
+| 404 Not Found | Resource not found |
+| 500 Internal Server Error | Server encountered an error |
+
+---
+
+## Authentication
+All protected endpoints require authentication via a Bearer token in the `Authorization` header.
+
+Example:
+```
+Authorization: Bearer your_token_here
+```
+
+---
+
+## Rate Limiting
+Each API request is rate-limited to prevent abuse. If limits are exceeded, a `429 Too Many Requests` response is returned.

@@ -1,0 +1,11 @@
+node_modules
+build
+dist
+.git
+.vscode
+.env
+.cache
+.dockerignore
+npm-debug.log
+yarn.lock
+.DS_Store
