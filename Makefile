@@ -1,6 +1,8 @@
 # Variables
 DOCKER_COMPOSE = sudo docker compose -f ./src/docker-compose.yml
+DOCKER = sudo docker
 SERVICE_NAME = backend
+ARGS := $(filter-out $(firstword $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 # Build and run the container
 up:
@@ -20,7 +22,14 @@ clean:
 	sudo docker system prune -a -f
 
 # Restart the container
-restart: stop up
+restart:
+# if $(ARGS) is empty, restart all services
+# otherwise, restart the specified service
+	ifeq ($(ARGS),)
+		$(DOCKER) restart
+	else
+		$(DOCKER) restart $(ARGS)
+	endif
 
 # Show running containers
 ps:
@@ -32,4 +41,7 @@ logs:
 
 # Enter the running container's shell
 shell:
-	sudo docker exec -it $$(docker ps -q --filter name=$(SERVICE_NAME)) /bin/sh
+	sudo docker exec -it $(ARGS) /bin/sh
+
+%:
+	@:
