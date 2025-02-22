@@ -59,6 +59,22 @@ services:
     networks:
       - default
     restart: unless-stopped
+  
+  tests:
+    container_name: tests
+    image: tests
+    build:
+      context: ./tests
+      dockerfile: Dockerfile
+    volumes:
+      - ./tests/cypress:/tests/cypress
+      - ./tests/cypress.config.js:/tests/cypress.config.js
+    depends_on:
+      - backend
+      - frontend
+      - db
+    networks:
+      - default
 
 networks:
   default:

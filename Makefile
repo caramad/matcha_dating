@@ -1,12 +1,20 @@
 # Variables
 DOCKER_COMPOSE = sudo docker compose -f ./src/docker-compose.yml
 DOCKER = sudo docker
-SERVICE_NAME = backend
+BACKEND = backend
+FRONTEND = frontend
+TESTS = tests
+NGINX = nginx
+DB = db
+NETWORK_MODE = host
 ARGS := $(filter-out $(firstword $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-# Build and run the container
+# Build and run the container except tests
 up:
-	$(DOCKER_COMPOSE) up --build
+	$(DOCKER_COMPOSE) up --build $(BACKEND) $(FRONTEND) $(DB) $(TESTS) $(NGINX)
+
+up-container:
+	$(DOCKER_COMPOSE) up --build $(ARGS)
 
 # Run the container without rebuilding
 start:
@@ -14,22 +22,19 @@ start:
 
 # Stop the container
 stop:
-	$(DOCKER_COMPOSE) down
+	$(DOCKER_COMPOSE) down $(ARGS)
+
+clean-container:
+	$(DOCKER_COMPOSE) down -v --remove-orphans $(ARGS)
 
 # Remove containers, networks, and volumes
 clean:
-	$(DOCKER_COMPOSE) down -v
+	$(DOCKER_COMPOSE) down -v --remove-orphans $(ARGS)
 	sudo docker system prune -a -f
 
 # Restart the container
 restart:
-# if $(ARGS) is empty, restart all services
-# otherwise, restart the specified service
-	ifeq ($(ARGS),)
-		$(DOCKER) restart
-	else
-		$(DOCKER) restart $(ARGS)
-	endif
+	$(DOCKER) restart $(ARGS)
 
 # Show running containers
 ps:
@@ -41,7 +46,11 @@ logs:
 
 # Enter the running container's shell
 shell:
-	sudo docker exec -it $(ARGS) /bin/sh
+	sudo docker exec -it $(ARGS) sh
+
+test:
+	@echo "Running Cypress tests with tags: $(ARGS)"
+	$(DOCKER) exec -it $(TESTS) /bin/sh -c "npm run test -- --env grepTags=\"$(ARGS)\" grepFilterSpecs=true grepDebug=true"
 
 %:
 	@:

@@ -1,0 +1,22 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cypress.config.js",
+  "scripts": {
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "test:grep": "cypress run --env grep=$npm_config_grep",
+    "test:grep:open": "cypress open --env grep=$npm_config_grep"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@cypress/grep": "^4.1.0",
+    "axios": "^1.7.9",
+    "cypress": "^14.0.3",
+    "supertest": "^7.0.0",
+    "tests": "file:"
+  }
+}

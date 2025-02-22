@@ -14,7 +14,7 @@ app.use(express.json());
 db.connectDB();
 
 // Routes
-app.use("/api", routes)
+app.use("/", routes)
 
 // Global Error Handler
 //app.use(errorHandler);
