@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(errorHandler);
 
-app.use("/", routes)
+app.use("/", routes);
 
 db.connect();
 app.listen(PORT, () => {

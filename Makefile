@@ -52,7 +52,7 @@ shell:
 
 test:
 	@echo "Running Cypress tests with tags: $(ARGS)"
-	$(DOCKER) exec -it $(TESTS) /bin/sh -c "npm run test -- --env grepTags=\"$(ARGS)\" grepFilterSpecs=true grepDebug=true"
+	$(DOCKER) exec -it $(TESTS) /bin/sh -c "npm run test"
 
 pg_cli:
 	pgcli -h $(DB_IP) -U postgres -d postgres

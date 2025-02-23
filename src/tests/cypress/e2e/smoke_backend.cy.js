@@ -1,5 +1,5 @@
 
-describe('Backend API Test', { tags: ['@smoke', "@backend"]}, () => {
+describe('Backend API Smoke Tests', () => {
 	it('should ping the backend', () => {
 		cy.request('/api/ping').should((response) => {
 			expect(response.status).to.eq(200);

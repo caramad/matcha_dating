@@ -76,6 +76,8 @@ services:
     volumes:
       - ./tests/cypress:/tests/cypress
       - ./tests/cypress.config.js:/tests/cypress.config.js
+    env_file:
+      - ./tests/.env.development.local
     depends_on:
       - backend
       - frontend
