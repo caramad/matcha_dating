@@ -10,6 +10,8 @@ services:
       - ./backend/js:/backend/js
     environment:
       - CHOKIDAR_USEPOLLING=true  # Ensures React detects file changes
+    env_file:
+      - ./backend/.env.development.local
     command: npm run dev  # Use a dev script that supports live reload
     restart: unless-stopped
     networks:
@@ -39,10 +41,15 @@ services:
     container_name: db
     image: postgres
     restart: always
-    environment:
-      POSTGRES_PASSWORD: example
+    env_file:
+      - ./db/.env.development.local
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - default
     ports: 
       - "5432:5432"
+    entrypoint: [ "bash", "-c", "docker-entrypoint.sh postgres & sleep 5 && psql -U postgres -d postgres -f /docker-entrypoint-initdb.d/init.sql && sleep infinity" ]
 
   nginx:
     container_name: nginx

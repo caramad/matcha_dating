@@ -8,6 +8,8 @@ NGINX = nginx
 DB = db
 NETWORK_MODE = host
 ARGS := $(filter-out $(firstword $(MAKECMDGOALS)),$(MAKECMDGOALS))
+DB_IP = $(shell $(DOCKER) inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db)
+
 
 # Build and run the container except tests
 up:
@@ -29,7 +31,7 @@ clean-container:
 
 # Remove containers, networks, and volumes
 clean:
-	$(DOCKER_COMPOSE) down -v --remove-orphans $(ARGS)
+	$(DOCKER_COMPOSE) down -v --remove-orphans
 	sudo docker system prune -a -f
 
 # Restart the container
@@ -51,6 +53,9 @@ shell:
 test:
 	@echo "Running Cypress tests with tags: $(ARGS)"
 	$(DOCKER) exec -it $(TESTS) /bin/sh -c "npm run test -- --env grepTags=\"$(ARGS)\" grepFilterSpecs=true grepDebug=true"
+
+pg_cli:
+	pgcli -h $(DB_IP) -U postgres -d postgres
 
 %:
 	@:

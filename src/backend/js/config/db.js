@@ -1,27 +1,21 @@
-let db;
+const { Pool } = require("pg");
+require("dotenv").config();
 
-// make db a dictionary with user registration data and populate it
-const initDB = () => {
-	db = {
-		users: [
-			{
-				id: 1,
-				name: "admin",
-				email: "admin@localhost",
-				password: "admin",
-			},
-		],
-	};
-}
+const db = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+});
 
-const connectDB = async () => {
-	initDB();
-	console.log("DB connected");
-}
+db.on("connect", (client) => {
+    console.log("✅ Connected to PostgreSQL Database");
+});
 
-const getDB = () => {
-	if (!db) throw new Error("❌ Database not initialized");
-	return db;
-}
+db.on("error", (err) => {
+    console.error("❌ Database connection error", err);
+    process.exit(1);
+});
 
-module.exports = {connectDB, getDB};
+module.exports = db;
