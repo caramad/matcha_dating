@@ -1,7 +1,9 @@
 module.exports = (err, req, res, next) => {
-	console.error(err.stack);
-	res.status(err.statusCode || 500).json({
-		success: false,
-		message: err.message || "Server Error"
-	});
+    console.error(err); // Log for debugging
+
+    const statusCode = err.status || 500;
+    
+    res.status(statusCode).json({
+        errors: [{ msg: err.message }]
+    });
 };

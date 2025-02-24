@@ -9,10 +9,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
-app.use(errorHandler);
+app.use(express.json({ limit: '10kb' })); // Set max JSON payload size
+app.use(express.urlencoded({ extended: true, limit: '10kb' })); // Set max form data size
 
 app.use("/", routes);
+app.use(errorHandler);
 
 db.connect();
 app.listen(PORT, () => {

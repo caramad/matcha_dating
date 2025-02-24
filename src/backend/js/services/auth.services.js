@@ -6,19 +6,30 @@ SALT_ROUNDS = 10
 
 exports.registerUser = async ({ name, email, password }) => {
 
-	// check empty fields
-	if (!name || !email || !password) {
-		throw new Error("All fields are required");
-	}
-
 	const existingUser = await User.findByEmail(email);
 	if (existingUser) {
 		throw new Error("User already exists");
 	}
 	
-	const salt = await bcrypt.genSalt(10);
-	const hashedPassword = await bcrypt.hash(password, salt);
+	const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 	const newUser = await User.create(name, email, hashedPassword);
 
 	return { id: newUser.id, name: newUser.name, email: newUser.email};
 };
+
+exports.loginUser = async ({ email, password }) => {
+
+	const user = await User.findByEmail(email);
+	if (!user) {
+		throw new Error("Invalid credentials");
+	}
+
+	const isMatch = await bcrypt.compare(password, user.password);
+	if (!isMatch) {
+		throw new Error("Invalid credentials");
+	}
+
+	const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+	return token
+}

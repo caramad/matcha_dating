@@ -1,11 +1,15 @@
 describe('Backend API Authentication Tests', () => {
+	const MIN_PASSWORD_SIZE = 8;
+	const MAX_NAME_SIZE = 30;
+	const MAX_EMAIL_SIZE = 50;
+	const MAX_PASSWORD_SIZE = 50;
+
     const testUser = {
         name: 'testname',
         email: 'testemail@example.com',
         password: 'testpassword'
     };
 
-    // Helper function to register a user
     const registerUser = (user, failOnStatusCode = true) => {
         return cy.request({
             method: 'POST',
@@ -15,10 +19,19 @@ describe('Backend API Authentication Tests', () => {
         });
     };
 
-    // Helper function to delete a user from the database
     const deleteUser = (email) => {
         return cy.task('queryDb', `DELETE FROM users WHERE email = '${email}';`);
     };
+
+	const assertErrorMessageExists = (response, status, message) => {
+		expect(response.status).to.eq(status);
+		expect(response.body.errors).to.be.an("array");
+	
+		// Check if at least one object in the errors array contains the expected message
+		const hasError = response.body.errors.some(error => error.msg === message);
+		expect(hasError, `Expected error message: "${message}". Got: ${JSON.stringify(response.body.errors)}`).to.be.true;
+	};
+	
 
     beforeEach(() => {
         deleteUser(testUser.email);
@@ -32,7 +45,6 @@ describe('Backend API Authentication Tests', () => {
         it('should register a new user', () => {
             registerUser(testUser).should((response) => {
                 expect(response.status).to.eq(201);
-                expect(response.body.success).to.eq(true);
                 expect(response.body.user).to.have.property('id');
                 expect(response.body.user).to.have.property('name', testUser.name);
                 expect(response.body.user).to.have.property('email', testUser.email);
@@ -53,28 +65,67 @@ describe('Backend API Authentication Tests', () => {
 
             registerUser(testUser, false).should((response) => {
                 expect(response.status).to.eq(400);
-                expect(response.body.success).to.eq(false);
-                expect(response.body.message).to.eq('User already exists');
+				assertErrorMessageExists(response, 400, 'User already exists');
             });
         });
 
-        const missingFields = ['name', 'email', 'password'];
+		const missingFields = ["name", "email", "password"];
 
-        missingFields.forEach((field) => {
-            it(`should not register a user with missing ${field}`, () => {
-                const invalidUser = { ...testUser };
-                delete invalidUser[field];
+		missingFields.forEach((field) => {
+			it(`should not register a user with missing ${field}`, () => {
+				const invalidUser = { ...testUser };
+				delete invalidUser[field];
+		
+				registerUser(invalidUser, false).should((response) => {
+					expect(response.status).to.eq(400);
+		
+					const errorMessages = {
+						name: "Name is required",
+						email: "Email is required",
+						password: "Password is required",
+					};
+		
+					assertErrorMessageExists(response, 400, errorMessages[field]);
+				});
+			});
+		});
 
-                registerUser(invalidUser, false).should((response) => {
-                    expect(response.status).to.eq(400);
-                    expect(response.body.success).to.eq(false);
-                    expect(response.body.message).to.eq('All fields are required');
-                });
-            });
-        });
+		const maxLengthFields = {
+			name: MAX_NAME_SIZE,
+			email: MAX_EMAIL_SIZE
+		};
+
+		Object.entries(maxLengthFields).forEach(([field, maxLength]) => {
+			it(`should not register a user with ${field} longer than ${maxLength} characters`, () => {
+				const invalidUser = { ...testUser, [field]: "a".repeat(maxLength + 1) };
+
+				registerUser(invalidUser, false).should((response) => {
+					expect(response.status).to.eq(400);
+					assertErrorMessageExists(response, 400, `${field.charAt(0).toUpperCase() + field.slice(1)} must be at most ${maxLength} characters`);
+				});
+			});
+		});
+
+		it(`should not register a user with password shorter than ${MIN_PASSWORD_SIZE} characters`, () => {
+			const invalidUser = { ...testUser, password: "a".repeat(MIN_PASSWORD_SIZE - 1) };
+
+			registerUser(invalidUser, false).should((response) => {
+				expect(response.status).to.eq(400);
+				assertErrorMessageExists(response, 400, `Password must be between ${MIN_PASSWORD_SIZE} and ${MAX_PASSWORD_SIZE} characters`);
+			});
+		});
+
+		it(`should not register a user with password longer than ${MAX_PASSWORD_SIZE} characters`, () => {
+			const invalidUser = { ...testUser, password: "a".repeat(MAX_PASSWORD_SIZE + 1) };
+
+			registerUser(invalidUser, false).should((response) => {
+				expect(response.status).to.eq(400);
+				assertErrorMessageExists(response, 400, `Password must be between ${MIN_PASSWORD_SIZE} and ${MAX_PASSWORD_SIZE} characters`);
+			});
+		});
     });
 
-    /* describe('User Login', () => {
+    describe('User Login', () => {
         it('should login a user', () => {
             registerUser(testUser);
 
@@ -83,9 +134,59 @@ describe('Backend API Authentication Tests', () => {
                 password: testUser.password
             }).should((response) => {
                 expect(response.status).to.eq(200);
-                expect(response.body.success).to.eq(true);
                 expect(response.body).to.have.property('token');
             });
         });
-    }); */
+
+		it('should not login a user with invalid password', () => {
+			registerUser(testUser);
+
+			cy.request({
+				method: 'POST',
+				url: '/api/auth/login',
+				body: {
+					email: testUser.email,
+					password: 'invalidpassword'
+				},
+				failOnStatusCode: false
+			}).should((response) => {
+				expect(response.status).to.eq(401);
+				assertErrorMessageExists(response, 401, 'Invalid credentials');
+			});
+		});
+
+		it('should not login a user that doesn\'t exist', () => {
+
+			cy.request({
+				method: 'POST',
+				url: '/api/auth/login',
+				body: {
+					email: 'invalid@mail.com',
+					password: 'invalidpassword',
+				},
+				failOnStatusCode: false
+			}).should((response) => {
+				expect(response.status).to.eq(401);
+				assertErrorMessageExists(response, 401, 'Invalid credentials');
+			});
+		});
+
+		const missingFields = ['email', 'password'];
+		missingFields.forEach((field) => {
+			it(`should not login a user with missing ${field}`, () => {
+				const invalidUser = { ...testUser };
+				delete invalidUser[field];
+
+				const errorMessages = {
+					email: 'Email is required',
+					password: 'Password is required',
+				};
+	
+				registerUser(invalidUser, false).should((response) => {
+					expect(response.status).to.eq(400);
+					assertErrorMessageExists(response, 400, errorMessages[field]);
+				});
+			});
+		});
+	});
 });
