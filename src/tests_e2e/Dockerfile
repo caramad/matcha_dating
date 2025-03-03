@@ -11,4 +11,4 @@ RUN npx cypress verify
 
 EXPOSE 8080
 
-CMD ["tail", "-f", "/dev/null"]
+CMD ["npm", "run", "test"]

@@ -62,28 +62,44 @@ services:
       - backend
       - frontend
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # Use a separate config for dev mode
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - default
     restart: unless-stopped
   
-  tests:
-    container_name: tests
-    image: tests
+  tests_e2e:
+    container_name: tests_e2e
+    image: tests_e2e
     build:
-      context: ./tests
+      context: ./tests_e2e
       dockerfile: Dockerfile
     volumes:
-      - ./tests/cypress:/tests/cypress
-      - ./tests/cypress.config.js:/tests/cypress.config.js
+      - ./tests_e2e/cypress:/tests/cypress
+      - ./tests_e2e/cypress.config.js:/tests/cypress.config.js
     env_file:
-      - ./tests/.env.development.local
+      - ./tests_e2e/.env.development.local
     depends_on:
       - backend
       - frontend
       - db
     networks:
       - default
+  
+  unit_test:
+    container_name: unit_test
+    build:
+      context: ./unit_test
+      dockerfile: Dockerfile
+    volumes:
+      - ./unit_test/tests:/app/tests
+      - ./backend/js:/app/backend
+    environment:
+      - NODE_ENV=test
+    depends_on:
+      - backend
+    networks:
+      - default
+
 
 networks:
   default:
