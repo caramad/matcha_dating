@@ -4,7 +4,7 @@ const User = require("../models/user.model");
 
 SALT_ROUNDS = 10
 
-exports.registerUser = async ({ name, email, password }) => {
+exports.registerUser = async ({ email, password }) => {
 
 	const existingUser = await User.findByEmail(email);
 	if (existingUser) {
@@ -12,9 +12,9 @@ exports.registerUser = async ({ name, email, password }) => {
 	}
 	
 	const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-	const newUser = await User.create(name, email, hashedPassword);
+	const newUser = await User.create(email, hashedPassword);
 
-	return { id: newUser.id, name: newUser.name, email: newUser.email};
+	return { id: newUser.id };
 };
 
 exports.loginUser = async ({ email, password }) => {

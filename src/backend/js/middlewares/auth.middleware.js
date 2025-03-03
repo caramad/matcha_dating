@@ -1,7 +1,6 @@
 const { body, validationResult } = require('express-validator');
 
 const MIN_PASSWORD_SIZE = 8;
-const MAX_NAME_SIZE = 30;
 const MAX_EMAIL_SIZE = 50;
 const MAX_PASSWORD_SIZE = 50;
 
@@ -24,12 +23,6 @@ const validUserToken = (req, res, next) => {
 };
 
 const validateRegister = [
-    body('name')
-        .trim()
-        .notEmpty().withMessage('Name is required')
-        .isString()
-        .isLength({ max: MAX_NAME_SIZE }).withMessage(`Name must be at most ${MAX_NAME_SIZE} characters`),
-
     body('email')
         .notEmpty().withMessage('Email is required')
         .isEmail().withMessage('Invalid email format')

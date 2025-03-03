@@ -17,24 +17,24 @@ describe("Auth Service", () => {
 
     describe("registerUser", () => {
         it("should register a new user successfully", async () => {
-            const mockUser = { id: 1, name: "Test User", email: "test@example.com", password: "hashedpassword" };
+            const mockUser = { id: 1, email: "test@example.com", password: "hashedpassword" };
 
             User.findByEmail.mockResolvedValue(null); // No existing user
             bcrypt.hash.mockResolvedValue("hashedpassword"); // Mock hashing
             User.create.mockResolvedValue(mockUser); // Mock user creation
 
-            const result = await authService.registerUser({ name: "Test User", email: "test@example.com", password: "password123" });
+            const result = await authService.registerUser({ email: "test@example.com", password: "password123" });
 
             expect(User.findByEmail).toHaveBeenCalledWith("test@example.com");
             expect(bcrypt.hash).toHaveBeenCalledWith("password123", 10);
-            expect(User.create).toHaveBeenCalledWith("Test User", "test@example.com", "hashedpassword");
-            expect(result).toEqual({ id: 1, name: "Test User", email: "test@example.com" });
+            expect(User.create).toHaveBeenCalledWith("test@example.com", "hashedpassword");
+            expect(result).toEqual({ id: 1 });
         });
 
         it("should throw an error if the user already exists", async () => {
             User.findByEmail.mockResolvedValue({ id: 1, email: "test@example.com" });
 
-            await expect(authService.registerUser({ name: "Test User", email: "test@example.com", password: "password123" }))
+            await expect(authService.registerUser({ email: "test@example.com", password: "password123" }))
                 .rejects.toThrow("User already exists");
 
             expect(User.findByEmail).toHaveBeenCalledWith("test@example.com");

@@ -61,7 +61,7 @@ shell:
 
 e2e_test:
 	@echo "Running Cypress tests with tags: $(ARGS)"
-	$(DOCKER) exec -it $(E2E_TEST) /bin/sh -c "npm run test"
+	$(DOCKER_COMPOSE) up --build $(E2E_TEST)
 
 unit_test:
 	@echo "Running unit tests with tags: $(ARGS)"
