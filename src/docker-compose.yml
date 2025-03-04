@@ -13,6 +13,8 @@ services:
     env_file:
       - ./backend/.env.development.local
     command: npm run dev  # Use a dev script that supports live reload
+    depends_on:
+      - db
     restart: unless-stopped
     networks:
       - default
@@ -39,7 +41,7 @@ services:
 
   db:
     container_name: db
-    image: postgres
+    image: postgis/postgis:latest
     restart: always
     env_file:
       - ./db/.env.development.local

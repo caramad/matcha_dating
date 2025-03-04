@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS postgis;
 DROP TABLE IF EXISTS user_attributes CASCADE;
 DROP TABLE IF EXISTS user_preferences CASCADE;
 DROP TABLE IF EXISTS user_interests CASCADE;
@@ -20,8 +21,7 @@ CREATE TABLE user_profiles (
     gender TEXT CHECK (gender IN ('Male', 'Female', 'Other')),
     sexuality TEXT CHECK (sexuality IN ('Heterosexual', 'Homosexual', 'Bisexual')),
     bio TEXT,
-    location TEXT, -- City/State/Country
-    profile_picture TEXT, -- URL or Path to Image Storage
+    location GEOGRAPHY(POINT, 4326) -- Stores lat/lon in WGS 84
     CONSTRAINT fk_user
         FOREIGN KEY(user_id)
         REFERENCES users(id)
@@ -57,4 +57,12 @@ CREATE TABLE user_attributes (
     attribute_value TEXT NOT NULL, -- Example: "Liberal", "Rock"
     PRIMARY KEY (user_id, attribute_key),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE user_images (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    image_path TEXT NOT NULL,
+    position INT NOT NULL CHECK (position >= 1), -- Image order
+    UNIQUE (user_id, position)
 );

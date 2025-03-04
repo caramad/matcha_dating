@@ -2,105 +2,154 @@ const db = require("../backend/config/db");
 const UserProfile = require("../backend/models/userProfile.model");
 
 jest.mock("../backend/config/db", () => ({
-query: jest.fn(),
+  query: jest.fn(),
 }));
 
 describe("UserProfile Model", () => {
-	afterEach(() => {
-	jest.clearAllMocks();
-	});
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-	describe("findByUserId", () => {
-	it("should return a UserProfile instance when user is found", async () => {
-		db.query.mockResolvedValueOnce({
-		rows: [
-			{
-			id: 1,
-			user_id: 101,
-			name: "John Doe",
-			age: 30,
-			gender: "Male",
-			sexuality: "Straight",
-			bio: "Hello world!",
-			location: "NY",
-			profile_picture: "profile.jpg",
-			},
-		],
-		});
+  describe("findByUserId", () => {
+    it("should return a UserProfile instance when found", async () => {
+      db.query.mockResolvedValueOnce({
+        rows: [
+          {
+            id: 1,
+            user_id: 10,
+            name: "John Doe",
+            age: 25,
+            gender: "Male",
+            sexuality: "Heterosexual",
+            bio: "Hello world!",
+            location: "[-74.006, 40.7128]",
+          },
+        ],
+      });
 
-		const userProfile = await UserProfile.findByUserId(101);
+      const userProfile = await UserProfile.findByUserId(10);
 
-		expect(userProfile).toBeInstanceOf(UserProfile);
-		expect(userProfile.id).toBe(1);
-		expect(userProfile.name).toBe("John Doe");
-		expect(db.query).toHaveBeenCalledWith("SELECT * FROM user_profiles WHERE user_id = $1", [101]);
-	});
+      expect(userProfile).toBeInstanceOf(UserProfile);
+      expect(userProfile.id).toBe(1);
+      expect(userProfile.userId).toBe(10);
+      expect(userProfile.name).toBe("John Doe");
+      expect(userProfile.location).toEqual([-74.006, 40.7128]);
+      expect(db.query).toHaveBeenCalledWith(
+        `SELECT id, user_id, name, age, gender, sexuality, bio, 
+                    (ST_AsGeoJSON(location)::json->'coordinates') AS location 
+             FROM user_profiles 
+             WHERE user_id = $1`,
+        [10]
+      );
+    });
 
-	it("should return null if user is not found", async () => {
-		db.query.mockResolvedValueOnce({ rows: [] });
+    it("should return null if user is not found", async () => {
+      db.query.mockResolvedValueOnce({ rows: [] });
 
-		const userProfile = await UserProfile.findByUserId(999);
+      const userProfile = await UserProfile.findByUserId(99);
 
-		expect(userProfile).toBeNull();
-		expect(db.query).toHaveBeenCalledWith("SELECT * FROM user_profiles WHERE user_id = $1", [999]);
-	});
-	});
+      expect(userProfile).toBeNull();
+      expect(db.query).toHaveBeenCalled();
+    });
+  });
 
-	describe("create", () => {
-	it("should insert and return a new UserProfile instance", async () => {
-		db.query.mockResolvedValueOnce({
-		rows: [
-			{
-			id: 2,
-			user_id: 102,
-			name: "Jane Doe",
-			age: 28,
-			gender: "Female",
-			sexuality: "Bisexual",
-			bio: "I love traveling",
-			location: "LA",
-			profile_picture: "jane.jpg",
-			},
-		],
-		});
+  describe("findByAttributes", () => {
+    it("should return users matching the criteria", async () => {
+      db.query.mockResolvedValueOnce({
+        rows: [
+          {
+            id: 2,
+            name: "Jane Doe",
+            age: 30,
+            gender: "Female",
+            sexuality: "Heterosexual",
+            bio: "Adventurer",
+            location: "[-118.2437, 34.0522]",
+            distance: 5.5,
+          },
+        ],
+      });
 
-		const newUser = await UserProfile.create(102, "Jane Doe", 28, "Female", "Bisexual", "I love traveling", "LA", "jane.jpg");
+      const result = await UserProfile.findByAttributes(
+        "Jane Doe",
+        30,
+        "Female",
+        "Heterosexual",
+        "Adventurer",
+        [-118.2437, 34.0522],
+        10
+      );
 
-		expect(newUser).toBeInstanceOf(UserProfile);
-		expect(newUser.id).toBe(2);
-		expect(newUser.name).toBe("Jane Doe");
-		expect(db.query).toHaveBeenCalledWith(
-		"INSERT INTO user_profiles (user_id, name, age, gender, sexuality, bio, location, profile_picture) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-		[102, "Jane Doe", 28, "Female", "Bisexual", "I love traveling", "LA", "jane.jpg"]
-		);
-	});
-	});
+      expect(result.userProfile).toBeInstanceOf(UserProfile);
+      expect(result.userProfile.name).toBe("Jane Doe");
+      expect(result.userProfile.location).toEqual([-118.2437, 34.0522]);
+      expect(result.distance).toBe(5.5);
+      expect(db.query).toHaveBeenCalled();
+    });
+  });
 
-	describe("update", () => {
-	it("should update an existing user profile", async () => {
-		db.query.mockResolvedValueOnce({ rowCount: 1 });
+  describe("create", () => {
+    it("should insert and return a new user profile", async () => {
+      db.query.mockResolvedValueOnce({
+        rows: [
+          {
+            id: 3,
+            user_id: 15,
+            name: "Alice",
+            age: 28,
+            gender: "Female",
+            sexuality: "Bisexual",
+            bio: "Love hiking!",
+            location: "[-122.4194, 37.7749]",
+          },
+        ],
+      });
 
-		const user = new UserProfile(3, 103, "Mike", 35, "Male", "Gay", "Software Engineer", "SF", "mike.jpg");
-		user.name = "Michael";
+      const newUserProfile = await UserProfile.create(
+        15,
+        "Alice",
+        28,
+        "Female",
+        "Bisexual",
+        "Love hiking!",
+        [-122.4194, 37.7749]
+      );
 
-		await user.update();
+      expect(newUserProfile).toBeInstanceOf(UserProfile);
+      expect(newUserProfile.name).toBe("Alice");
+      expect(newUserProfile.location).toEqual([-122.4194, 37.7749]);
+      expect(db.query).toHaveBeenCalledWith(
+        `INSERT INTO user_profiles (user_id, name, age, gender, sexuality, bio, location) 
+             VALUES ($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint($7, $8), 4326)) RETURNING id, user_id, name, age, gender, sexuality, bio, (ST_AsGeoJSON(location)::json->'coordinates') AS location`,
+        [15, "Alice", 28, "Female", "Bisexual", "Love hiking!", -122.4194, 37.7749]
+      );
+    });
+  });
 
-		expect(db.query).toHaveBeenCalledWith(
-		"UPDATE user_profiles SET name = $1, age = $2, gender = $3, sexuality = $4, bio = $5, location = $6, profile_picture = $7 WHERE id = $8",
-		["Michael", 35, "Male", "Gay", "Software Engineer", "SF", "mike.jpg", 3]
-		);
-	});
-	});
+  describe("update", () => {
+    it("should update an existing user profile", async () => {
+      const userProfile = new UserProfile(4, 20, "Bob", 32, "Male", "Homosexual", "Tech enthusiast", [-73.935242, 40.73061]);
 
-	describe("delete", () => {
-	it("should delete a user profile", async () => {
-		db.query.mockResolvedValueOnce({ rowCount: 1 });
+      db.query.mockResolvedValueOnce({ rowCount: 1 });
 
-		const user = new UserProfile(4, 104, "Sara", 27, "Female", "Straight", "Artist", "Seattle", "sara.jpg");
+      await userProfile.update();
 
-		await user.delete();
+      expect(db.query).toHaveBeenCalledWith(
+        "UPDATE user_profiles SET name = $1, age = $2, gender = $3, sexuality = $4, bio = $5, location = ST_SetSRID(ST_MakePoint($6, $7), 4326) WHERE id = $8",
+        ["Bob", 32, "Male", "Homosexual", "Tech enthusiast", -73.935242, 40.73061, 4]
+      );
+    });
+  });
 
-		expect(db.query).toHaveBeenCalledWith("DELETE FROM user_profiles WHERE id = $1", [4]);
-	});
-	});
+  describe("delete", () => {
+    it("should delete a user profile", async () => {
+      const userProfile = new UserProfile(5, 25, "Charlie", 29, "Male", "Heterosexual", "Traveler", [-77.0369, 38.9072]);
+
+      db.query.mockResolvedValueOnce({ rowCount: 1 });
+
+      await userProfile.delete();
+
+      expect(db.query).toHaveBeenCalledWith("DELETE FROM user_profiles WHERE id = $1", [5]);
+    });
+  });
 });

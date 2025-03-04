@@ -3,6 +3,8 @@ FROM node:16
 
 WORKDIR /backend
 
+RUN apt-get update && apt-get install -y netcat
+
 # Copy package files first for better caching
 COPY package.json package-lock.json ./
 
@@ -14,5 +16,4 @@ COPY . .
 
 EXPOSE 3000
 
-# Start the app in dev mode
-CMD ["npm", "run", "dev"]
+ENTRYPOINT ["/backend/entry.sh"]
