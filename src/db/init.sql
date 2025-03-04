@@ -18,7 +18,7 @@ CREATE TABLE user_profiles (
     name TEXT NOT NULL,
     age INT CHECK (age >= 18),  -- Minimum age restriction
     gender TEXT CHECK (gender IN ('Male', 'Female', 'Other')),
-    sexuality TEXT CHECK (sexuality IN ('Heterosexual', 'Homosexual', 'Other')),
+    sexuality TEXT CHECK (sexuality IN ('Heterosexual', 'Homosexual', 'Bisexual')),
     bio TEXT,
     location TEXT, -- City/State/Country
     profile_picture TEXT, -- URL or Path to Image Storage

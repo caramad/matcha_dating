@@ -1,5 +1,5 @@
 const db = require("../backend/config/db");
-const UserProfile = require("../backend/models/user_profile.model");
+const UserProfile = require("../backend/models/userProfile.model");
 
 jest.mock("../backend/config/db", () => ({
 query: jest.fn(),
