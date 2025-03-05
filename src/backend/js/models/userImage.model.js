@@ -1,5 +1,19 @@
 const db = require("../config/db");
 
+/**
+ * Represents an image associated with a user.
+ * @class
+ * @property {number} id - The ID of the image.
+ * @property {number} userId - The ID of the user the image belongs to.
+ * @property {string} imagePath - The path of the image.
+ * @property {number} position - The position/order of the image.
+ * @method findImagesByUserId - Fetches images for a specified user ordered by position.
+ * @method addImage - Adds a new image for the user.
+ * @method updateImage - Updates an existing image's path or position.
+ * @method deleteImage - Deletes an image from the user's collection.
+ * @returns {UserImage}
+ * @requires db
+ */
 class UserImage {
     constructor(id, userId, imagePath, position) {
         this.id = id;
@@ -80,4 +94,4 @@ class UserImage {
     }
 }
 
-module.exports = { UserProfile, UserImage };
+module.exports = { UserImage };
