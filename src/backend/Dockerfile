@@ -14,6 +14,8 @@ RUN npm install --omit=optional
 # Copy the rest of the app files
 COPY . .
 
+RUN chmod +x /backend/entry.sh
+
 EXPOSE 3000
 
 ENTRYPOINT ["/backend/entry.sh"]

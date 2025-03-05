@@ -11,7 +11,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true  # Ensures React detects file changes
     env_file:
-      - ./backend/.env.development.local
+      - ./.env.development.local
     command: npm run dev  # Use a dev script that supports live reload
     depends_on:
       - db
@@ -44,7 +44,7 @@ services:
     image: postgis/postgis:latest
     restart: always
     env_file:
-      - ./db/.env.development.local
+      - ./.env.development.local
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
@@ -79,7 +79,7 @@ services:
       - ./tests_e2e/cypress:/tests/cypress
       - ./tests_e2e/cypress.config.js:/tests/cypress.config.js
     env_file:
-      - ./tests_e2e/.env.development.local
+      - ./.env.development.local
     depends_on:
       - backend
       - frontend

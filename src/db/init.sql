@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS user_interests CASCADE;
 DROP TABLE IF EXISTS interests CASCADE;
 DROP TABLE IF EXISTS user_profiles CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS user_images CASCADE;
 
 
 CREATE TABLE users (
@@ -21,7 +22,7 @@ CREATE TABLE user_profiles (
     gender TEXT CHECK (gender IN ('Male', 'Female', 'Other')),
     sexuality TEXT CHECK (sexuality IN ('Heterosexual', 'Homosexual', 'Bisexual')),
     bio TEXT,
-    location GEOGRAPHY(POINT, 4326) -- Stores lat/lon in WGS 84
+    location GEOGRAPHY(POINT, 4326), -- Stores lat/lon in WGS 84
     CONSTRAINT fk_user
         FOREIGN KEY(user_id)
         REFERENCES users(id)
