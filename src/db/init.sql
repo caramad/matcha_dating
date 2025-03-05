@@ -67,3 +67,47 @@ CREATE TABLE user_images (
     position INT NOT NULL CHECK (position >= 1), -- Image order
     UNIQUE (user_id, position)
 );
+
+CREATE TABLE user_likes (
+	user_id INT NOT NULL,
+	liked_user_id INT NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (user_id, liked_user_id),
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (liked_user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE user_matches (
+	user_id INT NOT NULL,
+	matched_user_id INT NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (user_id, matched_user_id),
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (matched_user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE user_dislikes (
+	user_id INT NOT NULL,
+	disliked_user_id INT NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (user_id, disliked_user_id),
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (disliked_user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- trigger for integrity check of user_matches to make sure they can only exist if both users have liked each other
+CREATE OR REPLACE FUNCTION check_user_matches() RETURNS TRIGGER AS $$
+BEGIN
+	IF EXISTS (SELECT 1 FROM user_likes WHERE user_id = NEW.matched_user_id AND liked_user_id = NEW.user_id) THEN
+		RETURN NEW;
+	ELSE
+		RAISE EXCEPTION 'User must like each other to match';
+	END IF;
+END;
+
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER user_matches_trigger
+	BEFORE INSERT ON user_matches
+	FOR EACH ROW
+	EXECUTE FUNCTION check_user_matches();
