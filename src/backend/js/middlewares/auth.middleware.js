@@ -1,4 +1,5 @@
 const { body, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
 
 const MIN_PASSWORD_SIZE = 8;
 const MAX_EMAIL_SIZE = 50;
@@ -18,6 +19,7 @@ const validUserToken = (req, res, next) => {
         req.user = decoded; // Attach user info to request
         next();
     } catch (error) {
+		console.log("error: ", error);
         return res.status(403).json({ success: false, message: 'Invalid or expired token' });
     }
 };

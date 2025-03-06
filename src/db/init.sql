@@ -6,6 +6,10 @@ DROP TABLE IF EXISTS interests CASCADE;
 DROP TABLE IF EXISTS user_profiles CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS user_images CASCADE;
+DROP TABLE IF EXISTS user_likes CASCADE;
+DROP TABLE IF EXISTS user_matches CASCADE;
+DROP TABLE IF EXISTS user_dislikes CASCADE;
+DROP TABLE IF EXISTS messages CASCADE;
 
 
 CREATE TABLE users (
@@ -94,6 +98,18 @@ CREATE TABLE user_dislikes (
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 	FOREIGN KEY (disliked_user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
+CREATE TABLE messages (
+	id SERIAL PRIMARY KEY,
+	sender_id INT NOT NULL,
+	receiver_id INT NOT NULL,
+	sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	content TEXT NOT NULL,
+	FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 
 -- trigger for integrity check of user_matches to make sure they can only exist if both users have liked each other
 CREATE OR REPLACE FUNCTION check_user_matches() RETURNS TRIGGER AS $$

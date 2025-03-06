@@ -17,5 +17,5 @@ exports.login = async (req, res, next) => {
 	} catch (error) {
 		error.status = 401;
 		next(error);
-    }
+	}
 };

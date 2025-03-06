@@ -1,5 +1,5 @@
 module.exports = (err, req, res, next) => {
-    //console.error(err); // Log for debugging
+//    console.error(err); // Log for debugging
 
     const statusCode = err.status || 500;
     
