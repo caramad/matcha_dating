@@ -2,12 +2,18 @@ const { Client } = require('pg');
 
 module.exports = {
 	e2e: {
+		defaultCommandTimeout: 10000,
 		baseUrl: "http://nginx:80",
 		supportFile: false,
 		setupNodeEvents(on, config) {
 			config.env.grepFilterSpecs = true;
 			config.env.grepIntegrationFolder = '../../';
 			config.env.grepOmitFiltered = true;
+
+			on("before:browser:launch", (browser = {}, launchOptions) => {
+				launchOptions.args.push("--disable-web-security"); // Allow WebSocket connections
+				return launchOptions;
+			  });
 
 			// Add database query support
 			on('task', {

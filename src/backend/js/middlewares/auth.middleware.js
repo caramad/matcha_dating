@@ -6,7 +6,7 @@ const MAX_EMAIL_SIZE = 50;
 const MAX_PASSWORD_SIZE = 50;
 
 // Auth middleware to check if user is authenticated
-const validUserToken = (req, res, next) => {
+const validUserTokenHttp = (req, res, next) => {
     const token = req.header('Authorization');
 
     if (!token) {
@@ -23,6 +23,24 @@ const validUserToken = (req, res, next) => {
         return res.status(403).json({ success: false, message: 'Invalid or expired token' });
     }
 };
+
+const validUserTokenWs = (socket, next) => {
+	const token = socket.handshake.auth.token;
+	
+	if (!token) {
+		return next(new Error('Access Denied: No token provided'));
+	}
+	
+	try {
+		// Verify token
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		socket.user = decoded; // Attach user info to socket
+		console.log("socket.user: ", socket.user);
+		next();
+	} catch (error) {
+		return next(new Error('Invalid or expired token'));
+	}
+}
 
 const validateRegister = [
     body('email')
@@ -63,4 +81,4 @@ const validateLogin = [
 ];
 
 
-module.exports = { validUserToken, validateRegister,  validateLogin };
+module.exports = { validUserTokenHttp, validUserTokenWs, validateRegister,  validateLogin };

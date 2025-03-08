@@ -16,9 +16,16 @@
     "@cypress/grep": "^4.1.0",
     "axios": "^1.7.9",
     "cypress": "^14.0.3",
+    "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.3",
-    "supertest": "^7.0.0",
+    "socket.io": "^4.8.1",
     "tests": "file:"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "pg-mock": "^1.0.1",
+    "socket.io-client": "^4.8.1",
+    "supertest": "^7.0.0"
   }
 }

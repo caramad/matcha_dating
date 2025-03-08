@@ -1,31 +1,16 @@
 const { Server } = require("socket.io");
-//const { saveMessageToDB } = require("../services/message.services");
+const WebSocketController = require("../controllers/webSocket.controller");
 
 function initializeWebSocket(server) {
     const io = new Server(server, {
-        cors: {
-            origin: "*",
-            methods: ["GET", "POST"]
-        },
+		cors: { origin: "*", methods: ["GET", "POST"] },
         path: "/socket.io/"
     });
 
+    const webSocketController = new WebSocketController(io);
+
     io.on("connection", (socket) => {
-        console.log("User connected:", socket.id);
-
-        socket.on("sendMessage", async (message) => {
-            console.log("Message received:", message);
-
-            // Emit message to the recipient
-            io.to(message.receiverId).emit("receiveMessage", message);
-
-            // Save the message to the database
-            //await saveMessageToDB(message);
-        });
-
-        socket.on("disconnect", () => {
-            console.log("User disconnected:", socket.id);
-        });
+        webSocketController.handleConnection(socket);
     });
 
     return io;
