@@ -15,13 +15,12 @@ class WebSocketController {
 			console.log(`User ${userId} joined chat`);
 			this.webSocketService.joinRoom(socket, userId);
 		});
-  
 
 		// Handle sending messages
 		socket.on("sendMessage", async (data) => {
 			const senderId = socket.user.id;
 			data = { ...data, senderId };
-		  
+		
 			console.log(`Message sent by user #${data.senderId} to user #${data.receiverId}: ${data.message}`);
 			await this.webSocketService.sendMessage(socket, data);
 		});
@@ -30,12 +29,16 @@ class WebSocketController {
 		socket.on("receiveMessage", (data) => {
 			console.log(`Message received by user #${socket.user.id}: ${data.message}`);
 		});
-		  
 
 		// Handle disconenction
 		socket.on("disconnect", () => {
 			console.log(`User disconnected: ${socket.user.id}`);
 			this.webSocketService.handleDisconnect(socket);
+		});
+
+		// Handle errors
+		socket.on("error", (error) => {
+			console.error(`Error from user ${socket.user.id}: ${error}`);
 		});
 	}
 	
