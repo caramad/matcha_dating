@@ -19,7 +19,6 @@ class MessageService {
         try {
             return await Message.create(senderId, receiverId, message);
         } catch (error) {
-            console.error("Error sending message:", error);
             throw new Error("Failed to send message.");
         }
     }

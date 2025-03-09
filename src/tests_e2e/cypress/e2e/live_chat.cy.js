@@ -80,7 +80,7 @@ describe("WebSocket E2E via external server endpoint", () => {
 		});
 	});
 
-	it.only("Client 2 registers, logs in, connects, and sends message to Client 1", function (done) {
+	it("Client 2 registers, logs in, connects, and sends message to Client 1", function (done) {
 		this.timeout(10000);
 	
 		clientSocket1 = connectSocket(token1);
@@ -196,5 +196,93 @@ describe("WebSocket E2E via external server endpoint", () => {
 		setTimeout(() => {
 			done(new Error("Unauthenticated client did not receive a connection error"));
 		}, 5000);
+	});
+
+	it("Client should not send an empty message", function (done) {
+		this.timeout(10000);
+
+		clientSocket1 = connectSocket(token1);
+
+		clientSocket1.on("error", (error) => {
+			try {
+				expect(error).to.be.an("object");
+				expect(error).to.have.property("errors").that.is.an("array").with.length.greaterThan(0);
+				expect(error.errors[0]).to.have.property("msg", "Message is required");
+				done();
+			} catch (err) {
+				done(err);
+			}
+		});
+
+		clientSocket1.on("connect", () => {
+			clientSocket1.emit("join", userId1);
+			clientSocket1.emit("sendMessage", { receiverId: userId1, message: "" });
+		});
+	});
+
+	it("Client should not send a message longer than 500 characters", function (done) {
+		this.timeout(10000);
+
+		clientSocket1 = connectSocket(token1);
+
+		clientSocket1.on("error", (error) => {
+			try {
+				expect(error).to.be.an("object");
+				expect(error).to.have.property("errors").that.is.an("array").with.length.greaterThan(0);
+				expect(error.errors[0]).to.have.property("msg", "Message must be between 1 and 500 characters");
+				done();
+			} catch (err) {
+				done(err);
+			}
+		});
+
+		clientSocket1.on("connect", () => {
+			clientSocket1.emit("join", userId1);
+			clientSocket1.emit("sendMessage", { receiverId: userId1, message: "a".repeat(501) });
+		});
+	});
+
+	it("Client should not send a message to a non-integer receiver ID", function (done) {
+		this.timeout(10000);
+
+		clientSocket1 = connectSocket(token1);
+
+		clientSocket1.on("error", (error) => {
+			try {
+				expect(error).to.be.an("object");
+				expect(error).to.have.property("errors").that.is.an("array").with.length.greaterThan(0);
+				expect(error.errors[0]).to.have.property("msg", "Receiver ID must be an integer");
+				done();
+			} catch (err) {
+				done(err);
+			}
+		});
+
+		clientSocket1.on("connect", () => {
+			clientSocket1.emit("join", userId1);
+			clientSocket1.emit("sendMessage", { receiverId: "invalid", message: "Hello" });
+		});
+	});
+
+	it("Client should not send a message without a receiver ID", function (done) {
+		this.timeout(10000);
+
+		clientSocket1 = connectSocket(token1);
+
+		clientSocket1.on("error", (error) => {
+			try {
+				expect(error).to.be.an("object");
+				expect(error).to.have.property("errors").that.is.an("array").with.length.greaterThan(0);
+				expect(error.errors[0]).to.have.property("msg", "Receiver ID is required");
+				done();
+			} catch (err) {
+				done(err);
+			}
+		});
+
+		clientSocket1.on("connect", () => {
+			clientSocket1.emit("join", userId1);
+			clientSocket1.emit("sendMessage", { message: "Hello" });
+		});
 	});
 });

@@ -1,4 +1,5 @@
 const { body, validationResult } = require("express-validator");
+const errorHandler = require("../middlewares/error.middleware");
 
 const chatMessageValidationRules = [
 	body("message")
@@ -11,18 +12,21 @@ const chatMessageValidationRules = [
 		.isInt().withMessage("Receiver ID must be an integer")
 ];
 
-const validateChatMessageSocket = async (data, socket, next) => {
-	const mockRequest = {
-		body: data
-	};
+const validateChatMessageSocket = async (data, socket) => {
+    const mockRequest = { body: data };
 
-	await Promise.all(chatMessageValidationRules.map((validation) => validation.run(mockRequest)));
+    await Promise.all(chatMessageValidationRules.map((validation) => validation.run(mockRequest)));
 
-	const errors = validationResult(mockRequest);
-	if (!errors.isEmpty()) {
-		return socket.emit("error", { type: "validation", errors: errors.array() });
-	}
-	next();
+    const errors = validationResult(mockRequest);
+    if (!errors.isEmpty()) {
+        const error = new Error(errors.array()[0].msg);
+        errorHandler.handleWsError(error, socket);
+        throw error;
+    }
 };
+
+module.exports = { validateChatMessageSocket };
+
+
 
 module.exports = { validateChatMessageSocket };

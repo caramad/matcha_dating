@@ -21,4 +21,3 @@ const handleWsError = (error, socket, next) => {
 
 
 module.exports = { handleWsError, handleHttpError };
-
