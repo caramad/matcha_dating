@@ -16,10 +16,9 @@ app.use(express.json({ limit: '10kb' })); // Set max JSON payload size
 app.use(express.urlencoded({ extended: true, limit: '10kb' })); // Set max form data size
 
 const io = initializeWebSocket(server);
-io.use(authMiddleware.validUserTokenWs);
 
 app.use("/", routes);
-app.use(errorHandler);
+app.use(errorHandler.handleHttpError);
 
 db.connect();
 server.listen(PORT, () => {

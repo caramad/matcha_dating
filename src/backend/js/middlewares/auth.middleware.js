@@ -20,7 +20,7 @@ const validUserTokenHttp = (req, res, next) => {
         next();
     } catch (error) {
 		console.log("error: ", error);
-        return res.status(403).json({ success: false, message: 'Invalid or expired token' });
+		return res.status(400).json({ errors: [{ msg: 'Invalid or expired token' }] });
     }
 };
 
@@ -28,7 +28,7 @@ const validUserTokenWs = (socket, next) => {
 	const token = socket.handshake.auth.token;
 	
 	if (!token) {
-		return next(new Error('Access Denied: No token provided'));
+		return next(new Error("Access Denied: No token provided"));
 	}
 	
 	try {
@@ -38,7 +38,7 @@ const validUserTokenWs = (socket, next) => {
 		console.log("socket.user: ", socket.user);
 		next();
 	} catch (error) {
-		return next(new Error('Invalid or expired token'));
+		next(new Error("Invalid or expired token"));
 	}
 }
 

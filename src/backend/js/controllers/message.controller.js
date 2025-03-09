@@ -1,6 +1,6 @@
 const MessageService = require("../services/message.services");
 
-exports.saveMessage = async (req, res, next) => {
+exports.sendMessage = async (req, res, next) => {
 	try {
 		const senderId = req.user.id;
 		const receiverId = req.params.receiverId;
@@ -9,7 +9,7 @@ exports.saveMessage = async (req, res, next) => {
 		console.log('receiverId: ', receiverId);
 		console.log('content: ', content);
 
-		const message = await MessageService.saveMessage(senderId, receiverId, content);
+		const message = await MessageService.sendMessage(senderId, receiverId, content);
 		res.status(201).json({ message });
 	} catch (error) {
 		error.status = 400;

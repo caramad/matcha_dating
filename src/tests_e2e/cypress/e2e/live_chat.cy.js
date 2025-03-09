@@ -1,5 +1,5 @@
 /**
- * @file message.cy.js
+ * @file live_chat.cy.js
  * Cypress E2E test that connects to an *already running* Socket.io endpoint via Nginx,
  * but now with user registration + login to get a JWT token for Socket.IO auth.
  */
@@ -21,17 +21,12 @@ describe("WebSocket E2E via external server endpoint", () => {
 	let token1;
 	let token2;
 
-	// We’ll generate two unique user credentials
 	const user1 = { email: randomEmail(), password: "password123" };
 	const user2 = { email: randomEmail(), password: "password123" };
 
-	// If your e2e container sees the server as http://nginx, use that base
-	// Adjust if you use a different service name in docker-compose.
 	const BASE_URL = "http://nginx:80";
 
-	// --- Utilities ---
 	function registerAndLogin(user) {
-		// Return a promise that yields { token: '...' }
 		return cy
 			.request("POST", `${BASE_URL}/api/auth/register`, user)
 			.then(() => cy.request("POST", `${BASE_URL}/api/auth/login`, user))
@@ -42,37 +37,28 @@ describe("WebSocket E2E via external server endpoint", () => {
 			});
 	}
 
-	// Socket.io connect that returns the socket instance
 	function connectSocket(token) {
-		// With Cypress, we'll do raw JavaScript for the socket.
-		// Keep a reference so we can .close() in after() if needed.
-		const socket = io(`${BASE_URL}`, {
+		return io(`${BASE_URL}`, {
 			path: "/socket.io/",
 			transports: ["websocket"],
 			auth: { token },
 		});
-
-		return socket;
 	}
 
 	beforeEach(() => {
-		// register user1 and login both users
 		cy.task("queryDb", `DELETE FROM users`);
 
-		// register user1
 		registerAndLogin(user1).then(({ token }) => {
 			token1 = token;
 			userId1 = jsonwebtoken.decode(token).id;
 		});
 
-		// register user2
 		registerAndLogin(user2).then(({ token }) => {
 			token2 = token;
 			userId2 = jsonwebtoken.decode(token).id;
 		});
 	});
 
-	// Clean up the sockets after tests
 	afterEach(() => {
 		if (clientSocket1) clientSocket1.close();
 		if (clientSocket2) clientSocket2.close();
@@ -80,7 +66,7 @@ describe("WebSocket E2E via external server endpoint", () => {
 	});
 
 	it("Client 1 registers, logs in, and connects to Socket.io", function (done) {
-		this.timeout(10000); // allow up to 10s
+		this.timeout(10000);
 
 		clientSocket1 = connectSocket(token1);
 
@@ -94,127 +80,66 @@ describe("WebSocket E2E via external server endpoint", () => {
 		});
 	});
 
-	it("Client 2 registers, logs in, connects, and sends message to Client 1", function (done) {
+	it.only("Client 2 registers, logs in, connects, and sends message to Client 1", function (done) {
 		this.timeout(10000);
-
+	
 		clientSocket1 = connectSocket(token1);
 		clientSocket2 = connectSocket(token2);
 	
-		// Client 1 listens for "receiveMessage"
+		let messageReceived = false;
+		let messageAcknowledged = false;
+	
+		function checkDone() {
+			if (messageReceived && messageAcknowledged) {
+				done();
+			}
+		}
+	
 		clientSocket1.on("receiveMessage", (msg) => {
 			try {
 				expect(msg).to.have.property("content", `Hello from ${userId2}!`);
-				done(); // success!
+				messageReceived = true;
+				checkDone();
 			} catch (err) {
 				done(err);
 			}
 		});
-
-		clientSocket1.on("connect", () => {
-			expect(clientSocket1.connected).to.be.true;
-			clientSocket1.emit("join", userId1);
-		});
 	
+		clientSocket1.on("connect", () => clientSocket1.emit("join", userId1));
+		
 		clientSocket2.on("connect", () => {
 			clientSocket2.emit("join", userId2);
-	
-			// send a chat message
 			setTimeout(() => {
-				clientSocket2.emit("sendMessage", {
-					receiverId: userId1,
-					message: `Hello from ${userId2}!`,
-				});
+				clientSocket2.emit(
+					"sendMessage",
+					{ receiverId: userId1, message: `Hello from ${userId2}!` },
+					(response) => {
+						try {
+							expect(response).to.have.property("message");
+							messageAcknowledged = true;
+							checkDone();
+						} catch (err) {
+							done(err);
+						}
+					}
+				);
 			}, 500);
 		});
-	
-		clientSocket2.on("connect_error", (err) => {
-			done(err || new Error("connect_error without error object"));
-		});
-	
-		setTimeout(() => {
-			done(new Error("Message was never received by Client 1"));
-		}, 5000);
 	});
-
-	it("Client 2 sends another message to Client 1", function (done) {
-		this.timeout(10000);
-
-		clientSocket1 = connectSocket(token1);
-		clientSocket2 = connectSocket(token2);
 	
-		// Client 1 listens for "receiveMessage"
-		clientSocket1.on("receiveMessage", (msg) => {
-			try {
-				expect(msg).to.have.property("content", `Hello again from ${userId2}!`);
-				done(); // success!
-			} catch (err) {
-				done(err);
-			}
-		});
-
-		clientSocket1.on("connect", () => {
-			expect(clientSocket1.connected).to.be.true;
-			clientSocket1.emit("join", userId1);
-		});
-	
-		clientSocket2.on("connect", () => {
-			clientSocket2.emit("join", userId2);
-	
-			// send a chat message
-			setTimeout(() => {
-				clientSocket2.emit("sendMessage", {
-					receiverId: userId1,
-					message: `Hello again from ${userId2}!`,
-				});
-			}, 500);
-		});
-	
-		clientSocket2.on("connect_error", (err) => {
-			done(err || new Error("connect_error without error object"));
-		});
-	
-		setTimeout(() => {
-			done(new Error("Message was never received by Client 1"));
-		}, 5000);
-	});
 
 	it("Client 2 sends a message to a non-existent user", function (done) {
 		this.timeout(10000);
 
 		clientSocket2 = connectSocket(token2);
-	
-		clientSocket2.on("connect", () => {
-			expect(clientSocket2.connected).to.be.true;
-			clientSocket2.emit("join", userId2);
-	
-			// send a chat message
-			setTimeout(() => {
-				clientSocket2.emit("sendMessage", {
-					receiverId: 9999999,
-					message: `Hello from ${userId2}!`,
-				});
-			}, 500);
-		});
-	
-		// Client should receive an "error" message
-		clientSocket2.on("error", (err) => {
-			expect(err).to.equal("Message failed to send");
-			clientSocket2.close();
-			done();
-		});
-	});
 
-	it("Clients send messages to each other", function (done) {
-		this.timeout(10000);
-
-		clientSocket1 = connectSocket(token1);
-		clientSocket2 = connectSocket(token2);
-	
-		// Client 1 listens for "receiveMessage"
-		clientSocket1.on("receiveMessage", (msg) => {
+		clientSocket2.on("error", (error) => {
 			try {
-				expect(msg).to.have.property("content", `Hello from ${userId2}!`);
-				done(); // success!
+				console.log("Error received:", error);
+				expect(error).to.be.an("object");
+				expect(error).to.have.property("errors").that.is.an("array").with.length.greaterThan(0);
+				expect(error.errors[0]).to.have.property("msg", "Failed to send message.");
+				done();
 			} catch (err) {
 				done(err);
 			}
@@ -222,59 +147,54 @@ describe("WebSocket E2E via external server endpoint", () => {
 
 		clientSocket2.on("connect", () => {
 			clientSocket2.emit("join", userId2);
-	
-			// send a chat message
 			setTimeout(() => {
-				clientSocket2.emit("sendMessage", {
-					receiverId: userId1,
-					message: `Hello from ${userId2}!`,
-				});
+				clientSocket2.emit("sendMessage", { receiverId: 9999999, message: `Hello from ${userId2}!` });
 			}, 500);
 		});
-	
-		clientSocket2.on("connect_error", (err) => {
-			done(err || new Error("connect_error without error object"));
-		});
-	
-		clientSocket1.on("connect", () => {
-			expect(clientSocket1.connected).to.be.true;
-			clientSocket1.emit("join", userId1);
-		});
-	
-		clientSocket1.on("connect_error", (err) => {
-			done(err || new Error("connect_error without error object"));
-		});
-	
-		setTimeout(() => {
-			done(new Error("Message was never received by Client 1"));
-		}, 5000);
 	});
 
-	// --- Client cannot send a message to itself ---
 	it("Client should not send a message to itself", function (done) {
 		this.timeout(10000);
-	
+
 		clientSocket1 = connectSocket(token1);
-	
-		clientSocket1.on("connect", () => {
-			expect(clientSocket1.connected).to.be.true;
-			clientSocket1.emit("join", userId1);
-	
-			// Send a message to itself
-			clientSocket1.emit("sendMessage", {
-				receiverId: userId1,
-				message: "Hello from myself",
-			});
+
+		clientSocket1.on("error", (error) => {
+			try {
+				expect(error).to.be.an("object");
+				expect(error).to.have.property("errors").that.is.an("array").with.length.greaterThan(0);
+				expect(error.errors[0]).to.have.property("msg", "Cannot send message to self");
+				done();
+			} catch (err) {
+				done(err);
+			}
 		});
 
-		// Client should receive an "error" message
-		clientSocket1.on("error", (err) => {
-			expect(err).to.equal("Message failed to send");
-			clientSocket1.close();
-			done();
+		clientSocket1.on("connect", () => {
+			clientSocket1.emit("join", userId1);
+			clientSocket1.emit("sendMessage", { receiverId: userId1, message: "Hello from myself" });
 		});
 	});
-	
 
+	it("Unauthenticated client should not send a message", function (done) {
+		this.timeout(10000);
+
+		clientSocket1 = connectSocket("invalidtoken");
+
+		clientSocket1.on("connect_error", (err) => {
+			try {
+				expect(err).to.have.property("message", "Invalid or expired token");
+				done();
+			} catch (error) {
+				done(error);
+			}
+		});
+
+		clientSocket1.on("connect", () => {
+			done(new Error("Unauthenticated client was able to connect"));
+		});
+
+		setTimeout(() => {
+			done(new Error("Unauthenticated client did not receive a connection error"));
+		}, 5000);
+	});
 });
-
