@@ -85,4 +85,66 @@ describe("Auth Service", () => {
             expect(bcrypt.compare).toHaveBeenCalledWith("wrongpassword", "hashedpassword");
         });
     });
+
+	/*
+	exports.refreshToken = async ({ refreshToken }) => {
+
+	const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+	const user = await User.findById(decoded.id);
+	if (!user) {
+		throw new Error("Invalid token");
+	}
+
+	const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+	return token;
+}
+	*/
+
+	describe("refreshToken", () => {
+		it("should generate a new access token if the refresh token is valid", async () => {
+			const mockUser = { id: 1, email: "example@test.com" };
+
+			jwt.verify.mockReturnValue({ id: 1 });
+			User.findById.mockResolvedValue(mockUser);
+			jwt.sign.mockReturnValue("newAccessToken");
+
+			const result = await authService.refreshToken({ refreshToken: "validToken" });
+
+			expect(jwt.verify).toHaveBeenCalledWith("validToken", process.env.JWT_REFRESH_SECRET);
+			expect(User.findById).toHaveBeenCalledWith(1);
+			expect(jwt.sign).toHaveBeenCalledWith(
+				{ id: 1, email: "example@test.com" },
+				process.env.JWT_SECRET,
+				{ expiresIn: "1h" }
+			);
+			expect(result).toBe("newAccessToken");
+		});
+	
+		it("should throw an error if the refresh token is invalid", async () => {
+			jwt.verify.mockImplementation(() => {
+				throw new Error("Invalid token");
+			});
+	
+			await expect(authService.refreshToken({ refreshToken: "invalidToken" }))
+				.rejects.toThrow("Invalid token");
+	
+			expect(jwt.verify).toHaveBeenCalledWith("invalidToken", process.env.JWT_REFRESH_SECRET);
+			expect(jwt.sign).not.toHaveBeenCalled();
+		});
+	
+		it("should throw an error if the refresh token is expired", async () => {
+			jwt.verify.mockImplementation(() => {
+				throw new Error("jwt expired");
+			});
+	
+			await expect(authService.refreshToken({ refreshToken: "expiredToken" }))
+				.rejects.toThrow("jwt expired");
+	
+			expect(jwt.verify).toHaveBeenCalledWith("expiredToken", process.env.JWT_REFRESH_SECRET);
+			expect(jwt.sign).not.toHaveBeenCalled();
+		});
+	});
+	
+
 });

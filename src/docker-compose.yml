@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   backend:
     container_name: backend
@@ -97,6 +95,7 @@ services:
       - ./backend/js:/app/backend
     environment:
       - NODE_ENV=test
+      - ./.env.development.local
     depends_on:
       - backend
     networks:

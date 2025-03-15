@@ -80,5 +80,18 @@ const validateLogin = [
     }
 ];
 
+const validateRefreshToken = [
+	body('refreshToken')
+		.notEmpty().withMessage('Refresh token is required'),
 
-module.exports = { validUserTokenHttp, validUserTokenWs, validateRegister,  validateLogin };
+	(req, res, next) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+		next();
+	}
+];
+
+
+module.exports = { validUserTokenHttp, validUserTokenWs, validateRegister,  validateLogin, validateRefreshToken };

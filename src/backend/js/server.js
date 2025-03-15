@@ -4,7 +4,6 @@ const db = require("./config/db");
 const routes = require("./routes");
 const initializeWebSocket = require("./config/webSocket");
 const errorHandler = require("./middlewares/error.middleware")
-const authMiddleware = require("./middlewares/auth.middleware")
 require("dotenv").config();
 
 const app = express();

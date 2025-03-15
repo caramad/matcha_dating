@@ -33,3 +33,16 @@ exports.loginUser = async ({ email, password }) => {
 
 	return token
 }
+
+exports.refreshToken = async ({ refreshToken }) => {
+
+	const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+	const user = await User.findById(decoded.id);
+	if (!user) {
+		throw new Error("Invalid token");
+	}
+
+	const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+	return token;
+}

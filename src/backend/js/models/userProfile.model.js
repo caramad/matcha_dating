@@ -59,6 +59,7 @@ class UserProfile {
         let paramIndex = 1;
         let query = `SELECT id, user_id, name, age, gender, sexuality, bio, (ST_AsGeoJSON(location)::json->'coordinates') AS location `;
         
+		// Add distance calculation if location is provided
         if (location !== null) {
             query += `, ST_Distance(location, ST_MakePoint($${paramIndex++}, $${paramIndex++})::geography) AS distance`;
             params.push(location[0], location[1]);
@@ -86,6 +87,7 @@ class UserProfile {
             query += ` AND bio = $${paramIndex++}`;
             params.push(bio);
         }
+		// Add location filter if location is provided
         if (location !== null) {
             query += ` AND ST_DWithin(location, ST_MakePoint($1, $2)::geography, $${paramIndex++})`;
             params.push(radius);

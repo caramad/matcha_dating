@@ -7,6 +7,15 @@ class User {
 		this.password = password;
 	}
 
+	// find by id
+	static async findById(id) {
+		const { rows } = await db.query("SELECT * FROM users WHERE id = $1", [id]);
+		if (rows.length === 0) {
+			return null;
+		}
+		return new User(rows[0].id, rows[0].email, rows[0].password);
+	}
+
 	// Find user by email
 	static async findByEmail(email) {
 		const { rows } = await db.query("SELECT * FROM users WHERE email = $1", [email]);
