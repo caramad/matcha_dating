@@ -6,4 +6,11 @@ const normalizeSQL = (query) =>
          .trim();                // Remove leading and trailing spaces
 
 
-module.exports = normalizeSQL;
+// compare queries
+const verifyQuery = (db, query) => {
+	const actualQuery = normalizeSQL(db.query.mock.calls[0][0]);
+	const expectedQuery = normalizeSQL(query);
+	expect(actualQuery).toBe(expectedQuery);
+}
+
+module.exports = {verifyQuery, normalizeSQL};

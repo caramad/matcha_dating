@@ -1,6 +1,7 @@
+const { verify } = require("jsonwebtoken");
 const db = require("../backend/config/db");
 const UserProfile = require("../backend/models/userProfile.model");
-const normalizeSQL = require("./utils");
+const { verifyQuery } = require("./utils");
 
 jest.mock("../backend/config/db", () => ({
 	query: jest.fn(),
@@ -140,9 +141,7 @@ describe("UserProfile Model", () => {
 			expect(result.userProfile.name).toBe("Jane Doe");
 			expect(result.userProfile.location).toEqual([-118.2437, 34.0522]);
 			expect(result.distance).toBeUndefined();
-			const actualQuery = normalizeSQL(db.query.mock.calls[0][0]);
-			const normalizedExpectedQuery = normalizeSQL(expectedQuery);
-			expect(actualQuery).toBe(normalizedExpectedQuery);
+			verifyQuery(db, expectedQuery);
 		});
 	});
 

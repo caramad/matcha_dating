@@ -82,7 +82,7 @@ const validateLogin = [
 
 const validateRefreshToken = [
 	body('refreshToken')
-		.notEmpty().withMessage('Refresh token is required'),
+		.notEmpty().withMessage('Token is required'),
 
 	(req, res, next) => {
 		const errors = validationResult(req);

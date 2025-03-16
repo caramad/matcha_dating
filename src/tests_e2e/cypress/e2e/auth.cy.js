@@ -18,6 +18,25 @@ describe('Backend API Authentication Tests', () => {
         });
     };
 
+	const refreshToken = (refreshToken, failOnStatusCode = true) => {
+		return cy.request({
+			method: 'POST',
+			url: '/api/auth/refresh',
+			body: { refreshToken },
+			failOnStatusCode
+		});
+	};
+
+	// login
+	const loginUser = (user, failOnStatusCode = true) => {
+		return cy.request({
+			method: 'POST',
+			url: '/api/auth/login',
+			body: user,
+			failOnStatusCode
+		});
+	};
+
     const deleteUser = (email) => {
         return cy.task('queryDb', `DELETE FROM users WHERE email = '${email}';`);
     };
@@ -157,4 +176,32 @@ describe('Backend API Authentication Tests', () => {
             });
         });
     });
+
+	// refresh token
+	describe('Refresh Token', () => {
+		beforeEach(() => registerUser(testUser));
+
+		it('should refresh token successfully', () => {
+			loginUser(testUser).then((response) => {
+				const token = response.body.token;
+
+				refreshToken(token).should((response) => {
+					expect(response.status).to.eq(200);
+					expect(response.body).to.have.property('token');
+				});
+			});
+		});
+
+		it('should not refresh token with invalid token', () => {
+			refreshToken('invalidtoken', false).should((response) => {
+				assertErrorMessageExists(response, 401, 'jwt malformed');
+			});
+		});
+
+		it('should not refresh token with missing token', () => {
+			refreshToken('', false).should((response) => {
+				assertErrorMessageExists(response, 400, 'Token is required');
+			});
+		});
+	});
 });
