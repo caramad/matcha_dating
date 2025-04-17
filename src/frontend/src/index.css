@@ -13,18 +13,15 @@
 	color: white;
   }
   
-  /* Remove default centering from Vite starter */
   body {
 	display: block;
   }
   
-  /* Remove default button styles */
   button {
 	all: unset;
 	cursor: pointer;
   }
   
-  /* Optional anchor link reset */
   a {
 	color: inherit;
 	text-decoration: none;

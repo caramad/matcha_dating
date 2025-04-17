@@ -1,0 +1,60 @@
+.auth__background {
+	height: 100vh;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(90deg, #E63946 0%, #8A4FFF 100%);
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.authFormCard {
+	width: 100%;
+	max-width: 420px;
+	padding: 2.5rem;
+	border-radius: 16px;
+	background: rgba(255, 255, 255, 0.15);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	text-align: center;
+	color: #fff;
+	transition: all 0.3s ease-in-out;
+}
+
+.authFormCard__title {
+	font-size: 2.2rem;
+	margin-bottom: 1.5rem;
+	font-weight: 600;
+	color: #fff;
+}
+
+.authFormCard__form {
+	margin-bottom: 1.5rem;
+	display: flex;
+	justify-content: center;
+
+}
+
+.authFormCard__message {
+	font-size: 1.15rem;
+	color: #e0e0e0;
+	margin: 1.2rem 0;
+}
+
+.authFormCard__toggle {
+	font-size: 1rem;
+	color: #ddd;
+}
+
+.authFormCard__toggle {
+	padding: 0;
+	font-weight: 600;
+	color: #3a2cff;
+}
+
+.authFormCard__toggle:hover {
+	color: #ffcc00;
+}

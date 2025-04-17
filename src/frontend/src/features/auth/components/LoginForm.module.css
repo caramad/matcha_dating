@@ -1,0 +1,47 @@
+.loginForm__group {
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	width: fit-content;
+	margin-bottom: 5px;
+}
+
+.loginForm__form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: fit-content;
+	margin-bottom: 15px;
+}
+
+.loginForm__control {
+	padding: 0.75rem 1rem;
+	font-size: 1rem;
+	border: 1px solid #ccc;
+	border-radius: 0.5rem;
+	width: 300px;
+	background-color: #f9f9f9;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.loginForm__control:focus {
+	border-color: #66afe9;
+	outline: none;
+	box-shadow: 0 0 0 0.2rem rgba(102, 175, 233, 0.25);
+}
+
+.loginForm_submitBtn {
+	padding: 0.5rem 3rem;
+	font-size: 1.2rem;
+	font-weight: 700;
+	letter-spacing: 1px;
+	border: 3px solid white;
+	border-radius: 3rem;
+	text-transform: uppercase;
+	width: auto;
+}
+
+.loginForm_submitBtn:hover {
+	background: white;
+	color: #E63946;
+}

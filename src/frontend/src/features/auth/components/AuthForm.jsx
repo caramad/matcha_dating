@@ -1,45 +1,52 @@
 import React, { useState } from "react";
-//import LoginFields from "./LoginFields";
-//import SignupFields from "./SignupFields";
-import Button from "react-bootstrap/Button";
+import { useNavigate } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
+import styles from './AuthForm.module.css';
+import LoginForm from './LoginForm';
 
 function AuthForm({ initialMode = "login" }) {
-  const [mode, setMode] = useState(initialMode); // 'login' or 'signup'
+	const [mode, setMode] = useState(initialMode);
+	const navigate = useNavigate();
 
-  const handleToggle = () => {
-	setMode((prev) => (prev === "login" ? "signup" : "login"));
-  };
+	const handleToggle = () => {
+		const newMode = mode === "login" ? "signup" : "login";
+		setMode(newMode);
+		navigate(`?mode=${newMode}`, { replace: true });
+	};
 
-  const handleSubmit = async (formData) => {
-  };
+	return (
+		<div className={styles.auth__background}>
+			<div className={styles.authFormCard}>
+				<h2 className={styles.authFormCard__title}>
+					{mode === "login" ? "Log In" : "Sign Up"}
+				</h2>
 
-  return (
-	<div className="auth-form-card">
-	  <h2>{mode === "login" ? "Log In" : "Sign Up"}</h2>
-	  <form onSubmit={(e) => e.preventDefault()}>
-		{mode === "login" ? (
-			<p> LOGIN </p>
-			//<LoginFields onSubmit={handleSubmit} />
-		) : (
-			<p> SIGNUP </p>
-			//<SignupFields onSubmit={handleSubmit} />
-		)}
-	  </form>
-	  <div className="toggle-link">
-		{mode === "login" ? (
-		  <p>
-			Don't have an account?{" "}
-			<Button onClick={handleToggle} variant="link">Sign Up</Button>
-		  </p>
-		) : (
-		  <p>
-			Already have an account?{" "}
-			<Button onClick={handleToggle} variant="link">Log In</Button>
-		  </p>
-		)}
-	  </div>
-	</div>
-  );
+				<div className={styles.authFormCard__form}>
+					{mode === "login" ? (
+						<>
+							<LoginForm />
+						</>
+					) : (
+						<p className={styles.authFormCard__message}>SIGNUP</p>
+					)}
+				</div>
+
+				<div>
+					{mode === "login" ? (
+						<p>
+							Don't have an account?{" "}
+							<Button onClick={handleToggle} variant="link" className={styles.authFormCard__toggle}>Sign Up</Button>
+						</p>
+					) : (
+						<p>
+							Already have an account?{" "}
+							<Button onClick={handleToggle} variant="link" className={styles.authFormCard__toggle}>Log In</Button>
+						</p>
+					)}
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default AuthForm;
