@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import styles from './AuthForm.module.css';
 import LoginForm from './LoginForm';
+import SignupForm from './SignupForm';
 
 function AuthForm({ initialMode = "login" }) {
 	const [mode, setMode] = useState(initialMode);
@@ -27,7 +28,9 @@ function AuthForm({ initialMode = "login" }) {
 							<LoginForm />
 						</>
 					) : (
-						<p className={styles.authFormCard__message}>SIGNUP</p>
+						<>
+							<SignupForm />
+						</>
 					)}
 				</div>
 

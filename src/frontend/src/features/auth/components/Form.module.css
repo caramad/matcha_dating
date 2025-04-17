@@ -1,4 +1,4 @@
-.loginForm__group {
+.authForm__group {
 	display: flex;
 	flex-direction: column;
 	align-items: start;
@@ -6,7 +6,7 @@
 	margin-bottom: 5px;
 }
 
-.loginForm__form {
+.authForm__form {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -14,7 +14,7 @@
 	margin-bottom: 15px;
 }
 
-.loginForm__control {
+.authForm__control {
 	padding: 0.75rem 1rem;
 	font-size: 1rem;
 	border: 1px solid #ccc;
@@ -24,13 +24,13 @@
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.loginForm__control:focus {
+.authForm__control:focus {
 	border-color: #66afe9;
 	outline: none;
 	box-shadow: 0 0 0 0.2rem rgba(102, 175, 233, 0.25);
 }
 
-.loginForm_submitBtn {
+.authForm_submitBtn {
 	padding: 0.5rem 3rem;
 	font-size: 1.2rem;
 	font-weight: 700;
@@ -41,7 +41,7 @@
 	width: auto;
 }
 
-.loginForm_submitBtn:hover {
+.authForm_submitBtn:hover {
 	background: white;
 	color: #E63946;
 }

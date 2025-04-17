@@ -27,15 +27,15 @@ function HomePage() {
 					<div className={styles.home__actions}>
 						<button
 							className={styles.home__button}
-							onClick={() => navigate('/auth?mode=signup')}
-						>
-							Sign Up
-						</button>
-						<button
-							className={styles.home__button}
 							onClick={() => navigate('/auth?mode=login')}
 						>
 							Login
+						</button>
+						<button
+							className={styles.home__button}
+							onClick={() => navigate('/auth?mode=signup')}
+						>
+							Sign Up
 						</button>
 					</div>
 				</div>

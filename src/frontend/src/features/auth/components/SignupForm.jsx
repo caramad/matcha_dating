@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Form, Button, Alert } from "react-bootstrap";
 import style from './Form.module.css'
 
-function LoginForm() {
+function SignupForm() {
 	const {
 		register,
 		handleSubmit,
@@ -17,6 +17,19 @@ function LoginForm() {
 	return (
 		<Form onSubmit={handleSubmit(onSubmit)} noValidate >
 			<div className={style.authForm__form}>
+				<Form.Group controlId="formName" className={`mb-3 ${style.authForm__group}`}>
+					<Form.Label>Name</Form.Label>
+					<Form.Control className={style.authForm__control}
+						type="text"
+						placeholder="Enter name"
+						isInvalid={!!errors.name}
+						{...register("name", { required: "Name is required" })}
+					/>
+					<Form.Control.Feedback type="invalid">
+						{errors.name?.message}
+					</Form.Control.Feedback>
+				</Form.Group>
+
 				<Form.Group controlId="formEmail" className={`mb-3 ${style.authForm__group}`}>
 					<Form.Label>Email</Form.Label>
 					<Form.Control className={style.authForm__control}
@@ -56,12 +69,11 @@ function LoginForm() {
 				</Form.Group>
 			</div>
 
-
 			<Button variant="primary" type="submit" className={style.authForm_submitBtn}>
-				Login
+				Create Account
 			</Button>
 		</Form>
 	);
 }
 
-export default LoginForm;
+export default SignupForm;
