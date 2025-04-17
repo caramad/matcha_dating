@@ -34,19 +34,15 @@
 .authFormCard__form {
 	margin-bottom: 1.5rem;
 	display: flex;
-	justify-content: center;
-
+	flex-direction: column;
+    align-items: center;
+	gap: 1rem;
 }
 
 .authFormCard__message {
 	font-size: 1.15rem;
 	color: #e0e0e0;
 	margin: 1.2rem 0;
-}
-
-.authFormCard__toggle {
-	font-size: 1rem;
-	color: #ddd;
 }
 
 .authFormCard__toggle {
@@ -57,4 +53,60 @@
 
 .authFormCard__toggle:hover {
 	color: #ffcc00;
+}
+
+.authForm__group {
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	width: fit-content;
+	margin-bottom: 5px;
+}
+
+.authForm__form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: fit-content;
+	margin-bottom: 15px;
+}
+
+.authForm__control {
+	padding: 0.75rem 1rem;
+	font-size: 1rem;
+	border: 1px solid #ccc;
+	border-radius: 0.5rem;
+	width: 300px;
+	background-color: #f9f9f9;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.authForm__control:focus {
+	border-color: #66afe9;
+	outline: none;
+	box-shadow: 0 0 0 0.2rem rgba(102, 175, 233, 0.25);
+}
+
+.authForm_submitBtn {
+	padding: 0.5rem 3rem;
+	font-size: 1.2rem;
+	font-weight: 700;
+	letter-spacing: 1px;
+	border: 3px solid white;
+	border-radius: 3rem;
+	text-transform: uppercase;
+	width: auto;
+}
+
+.authForm_submitBtn:hover {
+	background: white;
+	color: #E63946;
+}
+
+.authForm_submitBtn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	background: #ddd;
+	color: #999;
+	border-color: #ccc;
 }

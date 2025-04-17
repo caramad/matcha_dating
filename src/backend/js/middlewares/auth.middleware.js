@@ -5,7 +5,7 @@ const MIN_PASSWORD_SIZE = 8;
 const MAX_EMAIL_SIZE = 50;
 const MAX_PASSWORD_SIZE = 50;
 
-// Auth middleware to check if user is authenticated
+// Check if user is authenticated
 const validUserTokenHttp = (req, res, next) => {
     const token = req.header('Authorization');
 
@@ -14,7 +14,6 @@ const validUserTokenHttp = (req, res, next) => {
     }
 
     try {
-        // Verify token
         const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
         req.user = decoded; // Attach user info to request
         next();
