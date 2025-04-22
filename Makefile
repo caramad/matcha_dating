@@ -43,6 +43,9 @@ clean:
 	$(DOCKER_COMPOSE) down -v --remove-orphans
 	sudo docker system prune -a -f
 
+restart-all:
+	$(DOCKER_COMPOSE) restart $(BACKEND) $(FRONTEND) $(DB) $(NGINX)
+
 # Restart the container
 restart:
 	$(DOCKER) restart $(ARGS)
