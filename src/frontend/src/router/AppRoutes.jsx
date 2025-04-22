@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes } from 'react-router-dom';
 import HomeRoutes from '@/features/home/routes';
 import AuthRoutes from '@/features/auth/routes';
+import ProfileRoutes from '@/features/profile/routes';
 
 
 function AppRoutes() {
@@ -10,9 +11,10 @@ function AppRoutes() {
       <Routes>
         {HomeRoutes}
 		{AuthRoutes}
+		{ProfileRoutes}
       </Routes>
     </Router>
   )
 }
 
-export default AppRoutes
+export default AppRoutes;
