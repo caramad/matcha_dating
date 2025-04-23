@@ -46,19 +46,6 @@ const DoubleRangeSlider = ({ min = 0, max = 100, step = 1, minRange=1 }) => {
 		document.addEventListener("mouseup", onMouseUp);
 	};
 
-	const shouldShiftThumbs = (value1, value2, threshold = 2) => {
-		return Math.abs(value2 - value1) <= threshold;
-	};
-	
-	const getThumbOffset = (thumb, value1, value2) => {
-		const shiftAmount = 10; // pixels to shift when thumbs are close
-		if (!shouldShiftThumbs(value1, value2)) {
-			return '0px';
-		}
-		return thumb === 'thumb1' ? `-${shiftAmount}px` : `${shiftAmount}px`;
-	};
-	
-
 	// Convert a value [18-99] into % position [0-100] for CSS
 	const valueToPercent = (value) => ((value - min) / (max - min)) * 100;
 
