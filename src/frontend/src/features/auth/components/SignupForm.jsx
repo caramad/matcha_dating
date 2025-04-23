@@ -1,9 +1,12 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { Form, Button, Alert } from "react-bootstrap";
 import styles from './AuthForm.module.css'
 
 function SignupForm({ toggleMode }) {
+	const navigate = useNavigate();
+	
 	const {
 		register,
 		handleSubmit,
@@ -84,7 +87,7 @@ function SignupForm({ toggleMode }) {
 
 				</div>
 
-				<Button variant="primary" type="submit" disabled={!isValid} className={styles.authForm_submitBtn}>
+				<Button variant="primary" type="submit" disabled={!isValid} onClick={() => navigate('/create-profile')} className={styles.authForm_submitBtn}>
 					Create Account
 				</Button>
 			</Form>

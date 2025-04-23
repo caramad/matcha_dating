@@ -91,10 +91,37 @@ function CreateProfilePage() {
 								/>
 								{errors.dob && <span className={styles.error}>{errors.dob.message}</span>}
 							</div>
-
+							<div className={cx("mb-3", styles.formCard__group)}>
+								<label htmlFor="gender">Gender</label>
+								<div className={styles.createProfilePage__genderRadio}>
+									<input {...register("gender", { required: "Gender is required" })} type="radio" id="gender-man" value="Man" className={styles.createProfilePage__genderRadioBtn} />
+									<label htmlFor="gender-man">Man</label>
+									<br />
+									<input {...register("gender", { required: "Gender is required" })} type="radio" id="gender-woman" value="Woman" className={styles.createProfilePage__genderRadioBtn} />
+									<label htmlFor="gender-woman">Woman</label>
+									<br />
+									<input {...register("gender", { required: "Gender is required" })} type="radio" id="gender-other" value="Other" className={styles.createProfilePage__genderRadioBtn} />
+									<label htmlFor="gender-other">Other</label>
+								</div>
+								{errors.gender && <span className={styles.error}>{errors.gender.message}</span>}
+							</div>
 							{/* Submit Button */}
-							<button type="submit" className={styles.submitButton}>Submit</button>
+							<div className={cx("mb-3", styles.formCard__group)}>
+								<label htmlFor="sexuality">Gender</label>
+								<div className={styles.createProfilePage__genderRadio}>
+									<input {...register("sexuality", { required: "Gender is required" })} type="radio" id="gender-man" value="Man" className={styles.createProfilePage__genderRadioBtn} />
+									<label htmlFor="sexuality-heterosexual">Heterosexual</label>
+									<br />
+									<input {...register("sexuality", { required: "Gender is required" })} type="radio" id="gender-woman" value="Woman" className={styles.createProfilePage__genderRadioBtn} />
+									<label htmlFor="sexuality-homosexual">Homosexual</label>
+									<br />
+									<input {...register("sexuality", { required: "Gender is required" })} type="radio" id="gender-other" value="Other" className={styles.createProfilePage__genderRadioBtn} />
+									<label htmlFor="sexuality-bisexual">Bisexual</label>
+								</div>
+								{errors.sexuality && <span className={styles.error}>{errors.sexuality.message}</span>}
+							</div>
 						</div>
+						<button type="submit" className={styles.formCard_submitBtn}>Next</button>
 					</form>
 				</FormCard>
 			</div>

@@ -3,3 +3,16 @@
 	height: auto;
 }
 
+.createProfilePage__genderRadio {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	text-align: center;
+	width: 100%;
+}
+
+.createProfilePage__genderRadioBtn {
+	width: 20px;
+	height: 20px;
+}
