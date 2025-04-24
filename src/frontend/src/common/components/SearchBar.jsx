@@ -6,8 +6,6 @@ import styles from './SearchBar.module.css';
 const SearchBar = ({ value, onChange }) => {
 	return (
 		<Paper
-			component="form"
-			onSubmit={(e) => e.preventDefault()}
 			elevation={3}
 			className={styles.searchBar__form}
 		>

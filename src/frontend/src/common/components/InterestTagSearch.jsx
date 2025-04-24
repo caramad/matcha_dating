@@ -8,8 +8,7 @@ const allTags = [
 	"sushi", "vegan", "running",
 ];
 
-const InterestTagSearch = ({ className = "", ...props }) => {
-	const [selectedTags, setSelectedTags] = useState([]);
+const InterestTagSearch = ({ className = "", selectedTags, setSelectedTags, ...props }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 
 	const toggleTag = (tag) => {
