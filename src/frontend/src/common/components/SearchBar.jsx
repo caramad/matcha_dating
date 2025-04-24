@@ -3,28 +3,21 @@ import { InputBase, IconButton, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import styles from './SearchBar.module.css';
 
-const SearchBar = ({ onSearch }) => {
-	const [query, setQuery] = useState('');
-
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		if (onSearch) onSearch(query);
-	};
-
+const SearchBar = ({ value, onChange }) => {
 	return (
 		<Paper
 			component="form"
-			onSubmit={handleSubmit}
+			onSubmit={(e) => e.preventDefault()}
 			elevation={3}
 			className={styles.searchBar__form}
 		>
 			<InputBase
-			 value={query}
-			 onChange={(e) => setQuery(e.target.value)}
-			 placeholder="Search…"
-			 fullWidth
-			 inputProps={{ 'aria-label': 'search' }}
-			 className={styles.searchBar__input}
+				value={value}
+				onChange={onChange}
+				placeholder="Search…"
+				fullWidth
+				inputProps={{ 'aria-label': 'search' }}
+				className={styles.searchBar__input}
 			/>
 			<IconButton type="submit" aria-label="search">
 				<SearchIcon />
@@ -32,5 +25,6 @@ const SearchBar = ({ onSearch }) => {
 		</Paper>
 	);
 };
+
 
 export default SearchBar;

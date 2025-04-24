@@ -1,0 +1,39 @@
+.interestTagSearch__container {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.interestTagSearch__label {
+	color: white;
+	font-size: 1rem;
+	margin-bottom: 8px;
+}
+
+.interestTagSearch__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.interestTagSearch__tag {
+	padding: 6px 12px;
+	border-radius: 20px;
+	border: 1px solid purple;
+	color: white;
+	background-color: transparent;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.interestTagSearch__tag:hover {
+	background-color: rgba(128, 0, 128, 0.1);
+}
+
+.interestTagSearch__selected {
+	border-color: red;
+}
+
+.interestTagSearch__selected:hover {
+	background-color: rgba(255, 0, 0, 0.1);
+}
