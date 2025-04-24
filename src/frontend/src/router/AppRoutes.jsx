@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes } from 'react-router-dom';
 import HomeRoutes from '@/features/home/routes';
 import AuthRoutes from '@/features/auth/routes';
 import ProfileRoutes from '@/features/profile/routes';
+import InterestsRoutes from '@/features/interests/routes';
 
 
 function AppRoutes() {
@@ -10,8 +11,9 @@ function AppRoutes() {
     <Router>
       <Routes>
         {HomeRoutes}
-		{AuthRoutes}
-		{ProfileRoutes}
+        {AuthRoutes}
+        {ProfileRoutes}
+        {InterestsRoutes}
       </Routes>
     </Router>
   )

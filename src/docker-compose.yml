@@ -27,7 +27,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./frontend:/app  # Sync local project with container for hot reloading
-      - /app/node_modules  # Prevents overwriting installed dependencies
     depends_on:
       - backend
     ports:

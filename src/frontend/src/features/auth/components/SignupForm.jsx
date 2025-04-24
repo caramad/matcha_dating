@@ -87,7 +87,7 @@ function SignupForm({ toggleMode }) {
 
 				</div>
 
-				<Button variant="primary" type="submit" disabled={!isValid} onClick={() => navigate('/create-profile')} className={styles.authForm_submitBtn}>
+				<Button variant="primary" type="submit" disabled={!isValid} onClick={() => navigate('/profile/create')} className={styles.authForm_submitBtn}>
 					Create Account
 				</Button>
 			</Form>
