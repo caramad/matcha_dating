@@ -1,0 +1,21 @@
+.logoContainer {
+	display: flex;
+	align-items: center;
+	text-decoration: none;
+	width: 100%;
+}
+
+.logo {
+	height: 100px;
+	width: auto;
+	transform: translateX(-15px);
+}
+
+.brandLabel {
+	font-size: 2rem;
+	font-weight: 700;
+	font-style: italic;
+	color: #E63946;
+	transform: translateX(-35px);
+
+}

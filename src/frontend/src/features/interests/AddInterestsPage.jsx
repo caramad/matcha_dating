@@ -17,7 +17,8 @@ function AddInterestsPage() {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		console.log("Submitted tags:", selectedTags);
-		// TODO: send to backend or navigate
+		navigate("/");
+		// TODO: backend
 	};
 
 	return (

@@ -4,6 +4,7 @@ import HomeRoutes from '@/features/home/routes';
 import AuthRoutes from '@/features/auth/routes';
 import ProfileRoutes from '@/features/profile/routes';
 import InterestsRoutes from '@/features/interests/routes';
+import AppLayoutRoutes from '@/features/appLayout/routes';
 
 
 function AppRoutes() {
@@ -14,6 +15,7 @@ function AppRoutes() {
         {AuthRoutes}
         {ProfileRoutes}
         {InterestsRoutes}
+        {AppLayoutRoutes}
       </Routes>
     </Router>
   )
