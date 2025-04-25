@@ -15,6 +15,7 @@ const palette = {
 	},
 	pink: {
 		default: '#E63946',
+		main: '#E63946',
 	}
 
 };

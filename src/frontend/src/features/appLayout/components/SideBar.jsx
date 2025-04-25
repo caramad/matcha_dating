@@ -25,11 +25,14 @@ import NavButton from './NavButton';
 const drawerWidth = 240;
 
 function SideBar() {
+	const [selectedPath, setSelectedPath] = React.useState('/swipe');
+
+
 	const navItems = [
-		{ text: 'Swipe', icon: <StyleIcon /> },
-		{ text: 'Search', icon: <SearchIcon /> },
-		{ text: 'Messages', icon: <ChatRoundedIcon /> },
-		{ text: 'Profile', icon: <AccountCircleIcon /> },
+		{ label: 'Swipe', path: '/swipe', icon: <StyleIcon /> },
+		{ label: 'Search', path: '/search', icon: <SearchIcon /> },
+		{ label: 'Messages', path: '/messages', icon: <ChatRoundedIcon /> },
+		{ label: 'Profile', path: '/profile', icon: <AccountCircleIcon /> },
 	];
 
 	return (
@@ -41,12 +44,25 @@ function SideBar() {
 				</Toolbar>
 
 				<Divider />
-				<List>
-					{navItems.map(({ text, icon }) => (
-						<ListItem key={text} disablePadding>
-							<NavButton>
+				<List sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					height: '100%',
+					pt: 0,
+					pb: 0,
+					gap: '15px',
+				}}>
+					{navItems.map(({ label, path, icon }) => (
+						<ListItem key={label} disablePadding>
+							<NavButton
+								onClick={() => {
+									setSelectedPath(path);
+									console.log("Navigating to: " + path)
+								}}
+								selected={selectedPath === path}
+							>
 								<ListItemIcon>{icon}</ListItemIcon>
-								<ListItemText primary={text} />
+								<ListItemText primary={label} />
 							</NavButton>
 						</ListItem>
 					))}

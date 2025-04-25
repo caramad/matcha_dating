@@ -11,12 +11,14 @@ const appLayoutTheme = {
 			fontSize: '15px',
 		},
 		navText: {
-			fontSize: '30px',
-			fontWeight: 20,
+			fontFamily: 'Sora, sans-serif',
+			fontSize: '2rem',
+			fontWeight: 'bold',
 		},
 		navTextSelected: {
+			fontFamily: 'Sora, sans-serif',
 			fontSize: '40px',
-			fontWeight: 600,
+			fontWeight: 'bold',
 		},
 	},
 	components: {
@@ -28,10 +30,10 @@ const appLayoutTheme = {
 				},
 				paper: {
 					width: drawerWidth,
-					backgroundColor: '#1E1E1E',
-					color: 'white',
+					background: 'linear-gradient(to right, rgba(18, 18, 18, 0.8) 0%, rgba(18, 18, 18, 0.5) 70%, rgba(18, 18, 18, 0.3) 100%)',
+					borderWidth: 0,
 					backdropFilter: 'blur(16px)',
-					background: '#121212',
+					color: 'white',
 					boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
 				},
 			},
